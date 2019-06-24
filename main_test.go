@@ -6,6 +6,32 @@ import (
 	"testing"
 )
 
+func TestLexicalOrder(t *testing.T) {
+	// Test cases from:
+	// https://www.geeksforgeeks.org/given-sorted-dictionary-find-precedence-characters/
+	tests := []struct {
+		name   string
+		words  []string
+		expect []string
+	}{
+		{
+			"bac",
+			[]string{"bca", "aaa", "acb"},
+			[]string{"b", "a", "c"}},
+		{
+			"bdac",
+			[]string{"baa", "abcd", "abca", "cab", "cad"},
+			[]string{"b", "d", "a", "c"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LexicalOrder(tt.words); !reflect.DeepEqual(got, tt.expect) {
+				t.Errorf("LexicalOrder returned %v; want %v", got, tt.expect)
+			}
+		})
+	}
+}
+
 func TestCeilLog2(t *testing.T) {
 	tests := []struct {
 		items int
@@ -26,13 +52,5 @@ func TestCeilLog2(t *testing.T) {
 				t.Errorf("ceilLog2(%d) = %d; want %d", tt.items, got, tt.steps)
 			}
 		})
-	}
-}
-
-func TestLexicalOrder(t *testing.T) {
-	words := []string{"bca", "aaa", "acb"}
-	expect := []string{"b", "a", "c"}
-	if got := LexicalOrder(words); !reflect.DeepEqual(got, expect) {
-		t.Errorf("LexicalOrder returned %v; want %v", got, expect)
 	}
 }

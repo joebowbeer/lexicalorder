@@ -13,7 +13,7 @@ func main() {
 }
 
 /*LexicalOrder receives a list of words that are sorted according to an unknown
-character sort order and returns their characters in the determined order.*/
+character precedence and returns their characters in the determined order.*/
 func LexicalOrder(words []string) []string {
 	slices, runes := indexRunes(words)
 	dist := adjacency(slices, len(runes))
