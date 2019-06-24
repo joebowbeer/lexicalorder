@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-// Reads ordered list of words from stdin and prints their characters in derived lexical order.
+// Reads an ordered list of words from stdin and prints their characters in the derived lexical order.
 func main() {
 	fmt.Println(LexicalOrder(readInput(*bufio.NewScanner(os.Stdin))))
 }
 
-/*LexicalOrder determines the (unknown) sort order of the given list of words
-and returns their characters (as strings) in sorted order.*/
+/*LexicalOrder receives a list of words that are sorted according to an unknown
+character sort order and returns their characters in the determined order.*/
 func LexicalOrder(words []string) []string {
 	slices, runes := indexRunes(words)
 	dist := adjacency(slices, len(runes))
