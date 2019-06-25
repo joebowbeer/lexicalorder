@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 )
 
-// Reads an ordered list of words from stdin and prints their characters in the derived lexical order.
+var numCPU = runtime.GOMAXPROCS(0)
+
+// Reads an ordered list of words from stdin and prints the determined character sort order.
 func main() {
 	fmt.Println(LexicalOrder(readInput(*bufio.NewScanner(os.Stdin))))
 }
@@ -99,26 +102,47 @@ func ceilLog2(dim int) int {
 func maxplus(in [][]int) [][]int {
 	dim := len(in)
 	out := make([][]int, dim)
-	// TODO: parallelize
-	for i := 0; i < dim; i++ {
-		out[i] = make([]int, dim)
-		for j := 0; j < dim; j++ {
-			if i == j {
-				continue
-			}
-			max := in[i][j]
-			for k := 0; k < dim; k++ {
-				if in[i][k] == 0 || in[k][j] == 0 {
-					continue
-				}
-				if sum := in[i][k] + in[k][j]; sum > max {
-					max = sum
-				}
-			}
-			out[i][j] = max
+	sem := make(chan struct{}, dim)
+	chunkSize := (dim + numCPU - 1) / numCPU
+	for i := 0; i < dim; i += chunkSize {
+		end := i + chunkSize
+		if end > dim {
+			end = dim
 		}
+		go func(m, n int) {
+			for i := m; i < n; i++ {
+				out[i] = maxplusRow(in, i)
+				sem <- struct{}{}
+			}
+		}(i, end)
+	}
+	// wait for goroutines to finish
+	for i := 0; i < dim; i++ {
+		<-sem
 	}
 	return out
+}
+
+// Returns one row of the max-plus product of the given distance matrix.
+func maxplusRow(in [][]int, i int) []int {
+	dim := len(in)
+	row := make([]int, dim)
+	for j := 0; j < dim; j++ {
+		if i == j {
+			continue
+		}
+		max := in[i][j]
+		for k := 0; k < dim; k++ {
+			if in[i][k] == 0 || in[k][j] == 0 {
+				continue
+			}
+			if sum := in[i][k] + in[k][j]; sum > max {
+				max = sum
+			}
+		}
+		row[j] = max
+	}
+	return row
 }
 
 // Returns row indices ordered by the longest distance found in each row.
