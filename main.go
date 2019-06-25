@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-var numCPU = runtime.GOMAXPROCS(0)
+var numChunks = runtime.GOMAXPROCS(0) // TODO: best practice?
 
 // Reads an ordered list of words from stdin and prints the determined character sort order.
 func main() {
@@ -104,7 +104,7 @@ func maxplus(in [][]int) [][]int {
 	dim := len(in)
 	out := make([][]int, dim)
 	var wg sync.WaitGroup
-	chunkSize := (dim + numCPU - 1) / numCPU
+	chunkSize := (dim + numChunks - 1) / numChunks
 	for i := 0; i < dim; i += chunkSize {
 		end := i + chunkSize
 		if end > dim {
