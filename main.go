@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sync"
 )
 
 var numCPU = runtime.GOMAXPROCS(0)
@@ -102,24 +103,22 @@ func ceilLog2(dim int) int {
 func maxplus(in [][]int) [][]int {
 	dim := len(in)
 	out := make([][]int, dim)
-	sem := make(chan struct{}, dim)
+	var wg sync.WaitGroup
 	chunkSize := (dim + numCPU - 1) / numCPU
 	for i := 0; i < dim; i += chunkSize {
 		end := i + chunkSize
 		if end > dim {
 			end = dim
 		}
+		wg.Add(1)
 		go func(m, n int) {
+			defer wg.Done()
 			for i := m; i < n; i++ {
 				out[i] = maxplusRow(in, i)
-				sem <- struct{}{}
 			}
 		}(i, end)
 	}
-	// wait for goroutines to finish
-	for i := 0; i < dim; i++ {
-		<-sem
-	}
+	wg.Wait()
 	return out
 }
 
