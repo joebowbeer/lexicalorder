@@ -16,17 +16,6 @@ func main() {
 	fmt.Println(LexicalOrder(readInput(*bufio.NewScanner(os.Stdin))))
 }
 
-/*LexicalOrder receives a list of words that are sorted according to an unknown
-character precedence and returns their characters in the determined order.*/
-func LexicalOrder(words []string) []string {
-	slices, runes := indexRunes(words)
-	dist := adjacency(slices, len(runes))
-	for n := ceilLog2(len(dist)); n > 0; n-- {
-		dist = maxplus(dist)
-	}
-	return restoreRunes(sortedIndices(dist), runes)
-}
-
 // Returns list of words read from scanner.
 func readInput(scanner bufio.Scanner) (words []string) {
 	for scanner.Scan() {
@@ -36,6 +25,17 @@ func readInput(scanner bufio.Scanner) (words []string) {
 		log.Fatal(err)
 	}
 	return
+}
+
+/*LexicalOrder receives a list of words that are sorted according to an unknown
+character precedence and returns their characters in the determined order.*/
+func LexicalOrder(words []string) []string {
+	slices, runes := indexRunes(words)
+	dist := adjacency(slices, len(runes))
+	for n := ceilLog2(len(dist)); n > 0; n-- {
+		dist = maxplus(dist)
+	}
+	return restoreRunes(sortedIndices(dist), runes)
 }
 
 // Given a list of words, converts each rune to an index into a list of runes.
@@ -71,10 +71,7 @@ func adjacency(in [][]int, dim int) [][]int {
 	for i := range out {
 		out[i] = make([]int, dim)
 	}
-	for i := range in {
-		if i == 0 {
-			continue
-		}
+	for i := 1; i < len(in); i++ {
 		// pred precedes succ in lexical order
 		pred := in[i-1]
 		succ := in[i]
