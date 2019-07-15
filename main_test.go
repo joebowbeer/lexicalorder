@@ -12,6 +12,9 @@ func TestLexicalOrder(t *testing.T) {
 		words  []string
 		expect []string
 	}{
+		{"(empty)",
+			[]string{},
+			nil},
 		{"a",
 			[]string{"a", "aa"},
 			[]string{"a"}},
