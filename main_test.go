@@ -7,19 +7,23 @@ import (
 )
 
 func TestLexicalOrder(t *testing.T) {
-	// Test cases from:
-	// https://www.geeksforgeeks.org/given-sorted-dictionary-find-precedence-characters/
 	tests := []struct {
 		name   string
 		words  []string
 		expect []string
 	}{
-		{
-			"bac",
+		{"a",
+			[]string{"a", "aa"},
+			[]string{"a"}},
+		{"ab",
+			[]string{"a", "b"},
+			[]string{"a", "b"}},
+		// Test cases from:
+		// https://www.geeksforgeeks.org/given-sorted-dictionary-find-precedence-characters/
+		{"bac",
 			[]string{"bca", "aaa", "acb"},
 			[]string{"b", "a", "c"}},
-		{
-			"bdac",
+		{"bdac",
 			[]string{"baa", "abcd", "abca", "cab", "cad"},
 			[]string{"b", "d", "a", "c"}},
 	}
